@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/style.css"/>
+    <script src="https://kit.fontawesome.com/b6ad2a5fa2.js" crossorigin="anonymous"></script>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="bg-cover"></div>
+
+    <div></div>
+
+        <div id="handlebar" class="bar">
+            <h1>Weather GO</h1>
+            <a href="/">Pesquisar</a>
+            <a href="/about">Sobre</a>
+        </div>
+        <div class="searchbar">
+            <input class="searchbar_input" placeholder="insira uma cidade" id="inputCity">
+            <i onclick="SendLocation()" class="fa-solid fa-magnifying-glass" style="color: cadetblue; position: relative;right: 1.5rem; cursor: pointer;"></i>
+        </div>
+        <div class="searchbar">
+            <p id="error"></p>
+        </div>
+
+        <div class="mid_info hidden" id="blockWeather">
+            <h1 id="weatherInfo_city">City</h1>
+            <img id="weatherInfo_img" width="256px" class="weatherImg">
+            <div class="mid_info_container">
+                <div class="mid_info_div">
+                    <i class="fa-solid fa-temperature-high" style="color: #707070;"></i>
+                    <p id="weatherInfo_temp">Temp</p>
+                </div>
+                <div class="mid_info_div">
+                    <i class="fa-solid fa-wind" style="color: #707070;"></i>
+                    <p id="weatherInfo_wind">Wind</p>
+                </div>
+                <div class="mid_info_div">
+                    <i class="fa-solid fa-droplet" style="color: #707070;"></i>
+                    <p id="weatherInfo_humidity">Humidity</p>
+                </div>
+                <div class="mid_info_div">
+                    <i class="fa-solid fa-temperature-arrow-down" style="color: #707070;"></i>
+                    <p id="weatherInfo_temp_min">Temp Min</p>
+                </div>
+                <div class="mid_info_div">
+                    <i class="fa-solid fa-temperature-arrow-up" style="color: #707070;"></i>
+                    <p id="weatherInfo_temp_max">Temp Max</p>
+                </div>
+            </div>
+        </div>
+</body>
+</html>
+
+<script>
+    async function SendLocation() {
+        const inputCity = document.getElementById("inputCity")
+        const blockWeather = document.getElementById("blockWeather")
+        const errorTxt = document.getElementById("error")
+        const res = await fetch(`/api/getweather?city=${inputCity.value}`)
+
+        await blockWeather.classList.add("hidden")
+        if (!res.ok) {
+            if (res.status == 404) {
+                errorTxt.textContent = "Insira uma cidade válida"
+            } else {
+                errorTxt.textContent = "Ocorreu um erro, tente novamente"
+            }
+        }
+        await res.json().then((data) => {
+            const weatherInfoCity = document.getElementById("weatherInfo_city")
+            const weatherInfoTemp = document.getElementById("weatherInfo_temp")
+            const weatherInfoTempMin = document.getElementById("weatherInfo_temp_min")
+            const weatherInfoTempMax = document.getElementById("weatherInfo_temp_max")
+            // const weatherInfoDesc = document.getElementById("weatherInfo_desc")
+            const weatherInfoImg = document.getElementById("weatherInfo_img")
+            const weatherInfoWind = document.getElementById("weatherInfo_wind")
+            const weatherInfoHumidity = document.getElementById("weatherInfo_humidity")
+
+            weatherInfoImg.setAttribute("src", `https://openweathermap.org/img/wn/${data.icon}@4x.png`)
+            errorTxt.textContent = ""
+            weatherInfoCity.textContent = data.city
+            weatherInfoTemp.textContent = data.temperature.current + "°"
+            weatherInfoTempMin.textContent = data.temperature.min + "°"
+            weatherInfoTempMax.textContent = data.temperature.max + "°"
+            // weatherInfoDesc.textContent = data.weather[0].description
+            weatherInfoWind.textContent = data.wind + "m/s"
+            weatherInfoHumidity.textContent = data.humidity + "%"
+
+            blockWeather.classList.remove("hidden")
+        })
+    }
+</script>

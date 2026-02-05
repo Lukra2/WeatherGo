@@ -1,0 +1,16 @@
+# Arquivos de ambiente e chaves
+.env
+*.pem
+
+# IDEs e Editores
+.vscode/
+.idea/
+
+# Builds e logs
+dist/
+*.log
+
+# Ambiente Virtual / Github
+.venv
+__pycache__
+.github
